@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "vobe",
+    "slug": "vobe",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#000000"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.vobe.vobelife"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "cbc1474e-6b13-479f-a33f-b5c148e43396"
+      }
+    },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Gilroy-Medium.ttf",
+            "./assets/fonts/Gilroy-Regular.ttf",
+            "./assets/fonts/Gilroy-SemiBold.ttf",
+            "./assets/fonts/Gilroy-Bold.ttf"
+          ]
+        }
+      ]
+    ]
+  }
+}

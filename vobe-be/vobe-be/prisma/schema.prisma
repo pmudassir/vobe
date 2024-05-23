@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+//MASTER COLLECTION
+model User {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  email         String?
+  firstName     String
+  lastName      String
+  waitlisted    Boolean   @default(true)
+  active        Boolean
+  lastLogin     DateTime
+  phone         String    @unique
+  points        Int       @default(0)
+  type          UserRole  @default(USER)
+  fcmToken      String?
+  Bookings      Booking[]
+  Orders        Order[]
+  assignedPubId String?   @db.ObjectId
+  AssignedPub   Pub?      @relation(fields: [assignedPubId], references: [id])
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+//MASTER COLLECTION
+model Pub {
+  id           String     @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  address      String
+  phone        String
+  tags         String
+  mapsLink     String
+  about        String
+  foodMenu     String[]
+  barMenu      String[]
+  profileImage String
+  openTime     String
+  closeTime    String
+  active       Boolean
+  type         PubType
+  featureIds   String[]   @db.ObjectId
+  Features     Feature[]  @relation(fields: [featureIds], references: [id])
+  Events       Event[]
+  Bookings     Booking[]
+  Stories      Story[]
+  Products     Product[]
+  timeSlots    TimeSlot[]
+  Ambassadors  User[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+//PUB SPECIFIC
+model Story {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  pubId     String   @db.ObjectId
+  Pub       Pub      @relation(fields: [pubId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  createdBy String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//MASTER COLLECTION
+model Feature {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  icon      String
+  name      String
+  pubIds    String[] @db.ObjectId
+  Pubs      Pub[]    @relation(fields: [pubIds], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//PUB SPECIFIC
+model Event {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  description String
+  imageUrl    String
+  startDate   String
+  active      Boolean  @default(true)
+  pubId       String   @db.ObjectId
+  Pub         Pub      @relation(fields: [pubId], references: [id], onDelete: Cascade)
+  createdBy   String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+//PUB(PUB_TABLE + TIMESLOT) AND USER SPECIFIC
+model Booking {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String    @db.ObjectId
+  User         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pubId        String    @db.ObjectId
+  Pub          Pub       @relation(fields: [pubId], references: [id], onDelete: Cascade)
+  bookingDate  String
+  timeSlot     TimeSlot
+  peopleCount  Int
+  needValet    Boolean   @default(false)
+  carNumber    String?
+  isCancelled  Boolean   @default(false)
+  cancelDate   DateTime?
+  cancelReason String?
+  billAmount   Float     @default(0)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+//PUB SPECIFIC
+model Product {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  price     Float
+  quantity  Int
+  active    Boolean
+  pubId     String   @db.ObjectId
+  Pub       Pub      @relation(fields: [pubId], references: [id], onDelete: Cascade)
+  Orders    Order[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+//PUB(PRODUCT) and USER SPECIFIC
+model Order {
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  quantity     Int
+  userId       String      @db.ObjectId
+  User         User        @relation(fields: [userId], references: [id])
+  productId    String      @db.ObjectId
+  Product      Product     @relation(fields: [productId], references: [id])
+  active       Boolean
+  orderDate    String
+  orderStatus  OrderStatus @default(DRAFT)
+  cancelDate   String?
+  cancelReason String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+}
+
+enum UserRole {
+  USER
+  AMBASSADOR
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum OrderStatus {
+  DRAFT
+  CONFIRMED
+  CANCELLED
+}
+
+enum PubType {
+  LUXE
+  SUPER_PREMIUM
+}
+
+enum TimeSlot {
+  TIME_6_00_PM
+  TIME_6_30_PM
+  TIME_7_00_PM
+  TIME_7_30_PM
+  TIME_8_00_PM
+  TIME_8_30_PM
+  TIME_9_00_PM
+  TIME_9_30_PM
+  TIME_10_00_PM
+  TIME_10_30_PM
+  TIME_11_00_PM
+}
